@@ -1,31 +1,61 @@
 #!/usr/bin/python3
-"""Fetch and display an employee TODO list progress from a REST API."""
+"""
+Gather data from JSONPlaceholder API for a given employee ID
+and display TODO list progress.
+"""
 
 import requests
 import sys
 
 
-if __name__ == "__main__":
-    employee_id = int(sys.argv[1])
+def get_employee(employee_id):
+    """Fetch employee info from API."""
+    url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        return None
+    return response.json()
 
-    user_response = requests.get(
-        "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
-    )
-    user_data = user_response.json()
 
-    todos_response = requests.get(
-        "https://jsonplaceholder.typicode.com/todos",
-        params={"userId": employee_id},
-    )
-    todos = todos_response.json()
+def get_todos(employee_id):
+    """Fetch TODO list for a given employee."""
+    url = "https://jsonplaceholder.typicode.com/todos"
+    response = requests.get(url, params={"userId": employee_id})
+    if response.status_code != 200:
+        return []
+    return response.json()
 
-    done_tasks = [task for task in todos if task.get("completed")]
-    total_tasks = len(todos)
 
+def display_progress(employee_id):
+    """Display TODO list progress for the employee."""
+    employee = get_employee(employee_id)
+    if not employee:
+        return
+
+    todos = get_todos(employee_id)
+    total = len(todos)
+    done_tasks = [t for t in todos if t.get("completed")]
+    done_count = len(done_tasks)
+
+    # First line split for PEP8 (≤79 characters)
     print(
-        "Employee {} is done with tasks({}/{}):".format(
-            user_data.get("name"), len(done_tasks), total_tasks
-        )
+        "Employee {} is done with tasks({}/{})".format(
+            employee["name"], done_count, total
+        ) + ":"
     )
+
     for task in done_tasks:
-        print("\t {}".format(task.get("title")))
+        print("\t {}".format(task["title"]))
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: {} <employee_id>".format(sys.argv[0]))
+        sys.exit(1)
+
+    try:
+        emp_id = int(sys.argv[1])
+    except ValueError:
+        sys.exit("Employee ID must be an integer")
+
+    display_progress(emp_id)
