@@ -8,7 +8,8 @@ if __name__ == "__main__":
     employee_id = sys.argv[1]
 
     user_response = requests.get(
-        f"https://jsonplaceholder.typicode.com/users/{employee_id}", timeout=10
+        "https://jsonplaceholder.typicode.com/users/{}".format(employee_id),
+        timeout=10,
     )
     user_data = user_response.json()
 
