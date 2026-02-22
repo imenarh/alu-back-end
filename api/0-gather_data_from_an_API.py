@@ -6,18 +6,16 @@ import sys
 
 
 if __name__ == "__main__":
-    employee_id = sys.argv[1]
+    employee_id = int(sys.argv[1])
 
     user_response = requests.get(
-        "https://jsonplaceholder.typicode.com/users/{}".format(employee_id),
-        timeout=10,
+        "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
     )
     user_data = user_response.json()
 
     todos_response = requests.get(
         "https://jsonplaceholder.typicode.com/todos",
         params={"userId": employee_id},
-        timeout=10,
     )
     todos = todos_response.json()
 
