@@ -37,6 +37,7 @@ def display_progress(employee_id):
     done_tasks = [t for t in todos if t.get("completed")]
     done_count = len(done_tasks)
 
+    # First line split for PEP8 (≤79 characters)
     print(
         "Employee {} is done with tasks({}/{})".format(
             employee["name"], done_count, total
